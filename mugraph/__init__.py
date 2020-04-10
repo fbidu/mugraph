@@ -51,11 +51,23 @@ class Parser:
         """
         self.tokens = self.__parser.read(filepath)
 
+        last_level = 0
+
         for token in self.tokens:
             if token.get("type") == "heading":
                 text = token["children"][0]["text"]
+                level = token["level"]
 
-                if token["level"] == 1:
+                if level != 2 and level not in (last_level, last_level + 1):
+                    exception = (
+                        f"Current level {level} is incompatible with "
+                        f"last level {last_level}"
+                    )
+                    raise ParserException(exception)
+
+                last_level = level
+
+                if level == 1:
 
                     if self.root_name:
                         raise ParserException("Duplicated header")

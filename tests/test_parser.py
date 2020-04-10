@@ -17,7 +17,7 @@ def test_root_name_is_detected():
     assert parser.root_name == "Cashless"
 
 
-def test_double_root_failes():
+def test_double_root_fails():
     """
     tests if the parser fails when processing a file
     with two headers
@@ -26,4 +26,23 @@ def test_double_root_failes():
 
     with pytest.raises(ParserException) as excep:
         Parser(sample_file.absolute())
-        assert excep.value == "Duplicated header"
+
+    assert str(excep.value) == "Duplicated header"
+
+
+def test_skipy_header_fails():
+    """
+    if the headers increase more than 1 unit, like this:
+
+        # Title
+        ## Consumes
+        #### ERROR!
+
+    We shuold get an error
+    """
+    sample_file = Path("tests/skiphead.md")
+
+    with pytest.raises(ParserException) as excep:
+        Parser(sample_file.absolute())
+
+    assert str(excep.value) == "Current level 5 is incompatible with last level 3"
