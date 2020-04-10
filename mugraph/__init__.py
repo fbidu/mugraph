@@ -131,5 +131,8 @@ class Parser:
 
                     at_consumes = bool(text.lower() == "consumes")
 
-                if level == 3 and at_consumes:
-                    self.consumes.add(text)
+                if level == 3:
+                    if at_consumes:
+                        self.consumes.add(text)
+                    else:
+                        self.produces.add(text)

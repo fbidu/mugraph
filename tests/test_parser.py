@@ -57,6 +57,15 @@ def test_consumes_are_parsed():
     assert parser.consumes == {"Ticket Association"}
 
 
+def test_produces_are_parsed():
+    """
+    this test checks if all the defined produces are properly detected
+    """
+    sample_file = Path("tests/sample01.md")
+    parser = Parser(sample_file.absolute())
+    assert parser.produces == {"RabbitMQ message", "HTTP API"}
+
+
 def test_invalid_h2_fails():
     """
     tests if there are invalid title as second level headings. That is:
