@@ -1,5 +1,7 @@
 """
-μ-graph - a microservice dependency documentation tool
+Provides parsing functionalities and related tools.
+
+The main class here is the Parser class.
 """
 import mistune
 import networkx as nx

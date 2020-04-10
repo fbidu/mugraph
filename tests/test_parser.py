@@ -4,7 +4,7 @@ Unit tests for the Parser module
 from pathlib import Path
 import pytest
 
-from mugraph import Parser, ParserException
+from mugraph.parser import Parser, ParserException
 
 
 def test_root_name_is_detected():
