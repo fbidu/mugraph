@@ -83,3 +83,16 @@ def test_invalid_h2_fails():
         Parser(sample_file.absolute())
 
     assert str(excep.value) == "'ERROR' not allowed as a level two header"
+
+
+def test_graph_is_correct():
+    """
+    Checks if the generated graph is of the correct type
+    and has the necessary edges
+    """
+    sample_file = Path("tests/sample01.md")
+    parser = Parser(sample_file.absolute())
+    edges = set(parser.graph.edges())
+    assert ("Cashless", "RabbitMQ message") in edges
+    assert ("Cashless", "HTTP API") in edges
+    assert ("Ticket Association", "Cashless") in edges

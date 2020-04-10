@@ -2,6 +2,7 @@
 μ-graph - a microservice dependency documentation tool
 """
 import mistune
+import networkx as nx
 
 
 class ParserException(Exception):
@@ -38,6 +39,8 @@ class Parser:
         self.root_name = None
         self.consumes = set()
         self.produces = set()
+        self.graph = nx.DiGraph()
+
         self.__parser = mistune.Markdown(renderer=mistune.AstRenderer())
         self.parse(filepath)
 
@@ -136,3 +139,10 @@ class Parser:
                         self.consumes.add(text)
                     else:
                         self.produces.add(text)
+
+        # After all the tokens are parsed, we can add them to the graph
+        for item in self.consumes:
+            self.graph.add_edge(item, self.root_name)
+
+        for item in self.produces:
+            self.graph.add_edge(self.root_name, item)
