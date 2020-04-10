@@ -4,6 +4,15 @@
 import mistune
 
 
+class ParserException(Exception):
+    """
+    Generic parsing error
+    """
+
+    # pylint: disable=unnecessary-pass
+    pass
+
+
 class Parser:
     """
     mu-Graph main parser. It takes a markdown file and
@@ -18,6 +27,8 @@ class Parser:
     """
 
     # pylint: disable=too-few-public-methods
+
+    root_name = None
 
     def __init__(self, filepath):
         """
@@ -45,4 +56,8 @@ class Parser:
                 text = token["children"][0]["text"]
 
                 if token["level"] == 1:
+
+                    if self.root_name:
+                        raise ParserException("Duplicated header")
+
                     self.root_name = text
