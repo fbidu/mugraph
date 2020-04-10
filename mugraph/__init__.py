@@ -28,8 +28,6 @@ class Parser:
 
     # pylint: disable=too-few-public-methods
 
-    root_name = None
-
     def __init__(self, filepath):
         """
         Parameters
@@ -37,6 +35,9 @@ class Parser:
         filepath: str
             The full path for the markdown file to be parsed
         """
+        self.root_name = None
+        self.consumes = set()
+        self.produces = set()
         self.__parser = mistune.Markdown(renderer=mistune.AstRenderer())
         self.parse(filepath)
 
@@ -52,11 +53,48 @@ class Parser:
         self.tokens = self.__parser.read(filepath)
 
         last_level = 0
+        at_consumes = False
 
         for token in self.tokens:
+
+            # The most import processing happens when the token is a heading
+            # That is, it starts with at least one # char
             if token.get("type") == "heading":
+
                 text = token["children"][0]["text"]
                 level = token["level"]
+
+                """
+                *** Skip-level checking ***
+                The headers within a session should increase by one step
+                at the time. That is, this is invalid:
+
+                  # Title
+
+                  ## Consumes
+                  #### ERROR
+
+                But the header may not _always_ be incremental:
+
+                    # Title
+
+                    ## Consumes
+                    ### Hey hey
+                    ### I'm valid!
+
+                And they can decrease sharply to another H2:
+                    # Title
+
+                    ## Consumes
+                    ### Hey hey
+                    #### I have
+                    ##### TONS
+                    ###### Of details
+
+                    ## Produces
+                    ### This is valid, btw
+
+                """
 
                 if level != 2 and level not in (last_level, last_level + 1):
                     exception = (
@@ -67,9 +105,31 @@ class Parser:
 
                 last_level = level
 
-                if level == 1:
+                """
+                *** Header Checking ***
 
+                There should be only one top header
+                """
+                if level == 1:
                     if self.root_name:
                         raise ParserException("Duplicated header")
-
                     self.root_name = text
+
+                """
+                *** Produces-Consumes Checking ***
+
+                The only allowed titles at second level headers is "produces"
+                and "consumes". This way we can keep a simple "at_consumes"
+                boolean flag to check where we should put the subsequent
+                texts.
+                """
+                if level == 2:
+                    if text.lower() not in ("consumes", "produces"):
+                        raise ParserException(
+                            f"'{text}' not allowed as a level two header"
+                        )
+
+                    at_consumes = bool(text.lower() == "consumes")
+
+                if level == 3 and at_consumes:
+                    self.consumes.add(text)
