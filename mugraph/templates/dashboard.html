@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script src="{{ url_for('static', filename='cytoscape.min.js') }}"></script>
+    <style>
+        #cy {
+            width: 1000px;
+            height: 1000px;
+            display: block;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>{{message}}</h1>
+    <div id=cy></div>
+
+    <script lang="text/javascript">
+        var graph = {{ graph| tojson}};
+        var cy = cytoscape({
+            container: document.getElementById('cy'),
+            elements: graph.elements,
+            directed: true,
+            style: [ // the stylesheet for the graph
+                {
+                    selector: 'node',
+                    style: {
+                        'background-color': '#666',
+                        'label': 'data(id)'
+                    }
+                },
+
+                {
+                    selector: 'edge',
+                    style: {
+                        'width': 3,
+                        'line-color': '#ccc',
+                        'target-arrow-color': '#ccc',
+                        'target-arrow-shape': 'triangle',
+                        'curve-style': 'bezier'
+                    }
+                }
+            ],
+
+            layout: {
+                name: 'concentric'
+            }
+
+        });
+    </script>
+</body>
+
+</html>

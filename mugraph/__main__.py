@@ -3,7 +3,10 @@
 """
 from pathlib import Path
 
+from networkx.readwrite.json_graph import cytoscape
+
 from parser import Parser
+from front import Dashboard
 
 
 def main(filename):
@@ -13,6 +16,8 @@ def main(filename):
     filepath = Path(filename).absolute()
     parser = Parser(filepath)
     print(parser.graph.edges())
+    d = Dashboard(cytoscape.cytoscape_data(parser.graph))
+    d.run()
 
 
 if __name__ == "__main__":
