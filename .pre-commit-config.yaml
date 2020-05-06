@@ -32,5 +32,5 @@ repos:
             name: PyTest
             entry: poetry run pytest -v
             language: system
-            files: \.py$
+            pass_filenames: false
             stages: [push]
