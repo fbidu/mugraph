@@ -18,7 +18,6 @@ repos:
           - id: black
             stages: [commit]
             language_version: python3.7
-      stages: [commit]
     - repo: local
       hooks:
           - id: system

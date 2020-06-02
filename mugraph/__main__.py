@@ -3,9 +3,10 @@
 """
 from pathlib import Path
 
-from parser import Parser
 from networkx.readwrite.json_graph import cytoscape
-from front import Dashboard
+
+from mugraph.front import Dashboard
+from mugraph.parser import Parser
 
 
 def main(filename):
