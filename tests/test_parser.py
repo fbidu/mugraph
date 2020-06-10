@@ -96,3 +96,15 @@ def test_graph_is_correct():
     assert ("Cashless", "RabbitMQ message") in edges
     assert ("Cashless", "HTTP API") in edges
     assert ("Ticket Association", "Cashless") in edges
+
+
+def test_parser_adds_graph_description():
+    """
+    If after the first heading theres a paragraph, its text
+    should be add as a 'description' property in the
+    generated graph.
+    """
+    sample_file = Path("tests/sample01.md")
+    parsed = Parser(sample_file.absolute()).graph
+
+    assert "description" in parsed.graph

@@ -57,8 +57,16 @@ class Parser:
         """
         self.tokens = self.__parser.read(filepath)
 
+        level = 0
         last_level = 0
         at_consumes = False
+
+        def process_non_heading(token):
+            content = token.get("text")
+
+            # The text right after the heading is the global description
+            if level == 1:
+                self.graph.graph["description"] = content
 
         for token in self.tokens:
 
@@ -141,6 +149,11 @@ class Parser:
                         self.consumes.add(text)
                     else:
                         self.produces.add(text)
+
+            # Text tokens may contain metadata, schema and other information
+            # on nodes and edges
+            if token.get("type") == "paragraph":
+                process_non_heading(token)
 
         # After all the tokens are parsed, we can add them to the graph
         for item in self.consumes:
