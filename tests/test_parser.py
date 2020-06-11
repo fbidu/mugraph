@@ -15,6 +15,7 @@ def test_root_name_is_detected():
     sample_file = Path("tests/sample01.md")
     parser = Parser(sample_file.absolute())
     assert parser.root_name == "Cashless"
+    assert False
 
 
 def test_double_root_fails():
