@@ -8,6 +8,8 @@ from networkx.readwrite.json_graph import cytoscape
 from mugraph.front import Dashboard
 from mugraph.parser import Parser
 
+FELIPE_BIDU = False
+
 
 def main(filename):
     """
