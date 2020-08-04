@@ -6,15 +6,25 @@ import pytest
 
 from mugraph.parser import Parser, ParserException
 
+# pylint:disable=redefined-outer-name
 
-def test_root_name_is_detected():
+
+@pytest.fixture(scope="session")
+def valid_sample():
+    """
+    Returns a parser for sample01
+    """
+    sample_file = Path("tests/sample01.md")
+    parser = Parser(sample_file.absolute())
+    return parser
+
+
+def test_root_name_is_detected(valid_sample):
     """
     tests if a the parser can correctly evaluate
     the main microservice's name
     """
-    sample_file = Path("tests/sample01.md")
-    parser = Parser(sample_file.absolute())
-    assert parser.root_name == "Cashless"
+    assert valid_sample.root_name == "Cashless"
 
 
 def test_double_root_fails():
@@ -48,22 +58,18 @@ def test_skipy_header_fails():
     assert str(excep.value) == "Current level 5 is incompatible with last level 3"
 
 
-def test_consumes_are_parsed():
+def test_consumes_are_parsed(valid_sample):
     """
     this test checks if all the defined consumes are properly detected
     """
-    sample_file = Path("tests/sample01.md")
-    parser = Parser(sample_file.absolute())
-    assert parser.consumes == {"Ticket Association"}
+    assert valid_sample.consumes == {"Ticket Association"}
 
 
-def test_produces_are_parsed():
+def test_produces_are_parsed(valid_sample):
     """
     this test checks if all the defined produces are properly detected
     """
-    sample_file = Path("tests/sample01.md")
-    parser = Parser(sample_file.absolute())
-    assert parser.produces == {"RabbitMQ message", "HTTP API"}
+    assert valid_sample.produces == {"RabbitMQ message", "HTTP API"}
 
 
 def test_invalid_h2_fails():
@@ -85,26 +91,21 @@ def test_invalid_h2_fails():
     assert str(excep.value) == "'ERROR' not allowed as a level two header"
 
 
-def test_graph_is_correct():
+def test_graph_is_correct(valid_sample):
     """
     Checks if the generated graph is of the correct type
     and has the necessary edges
     """
-    sample_file = Path("tests/sample01.md")
-    parser = Parser(sample_file.absolute())
-    edges = set(parser.graph.edges())
+    edges = set(valid_sample.graph.edges())
     assert ("Cashless", "RabbitMQ message") in edges
     assert ("Cashless", "HTTP API") in edges
     assert ("Ticket Association", "Cashless") in edges
 
 
-def test_parser_adds_graph_description():
+def test_parser_adds_graph_description(valid_sample):
     """
     If after the first heading theres a paragraph, its text
     should be add as a 'description' property in the
     generated graph.
     """
-    sample_file = Path("tests/sample01.md")
-    parsed = Parser(sample_file.absolute()).graph
-
-    assert "description" in parsed.graph
+    assert "description" in valid_sample.graph.graph
