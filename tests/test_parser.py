@@ -3,6 +3,7 @@ Unit tests for the Parser module
 """
 from pathlib import Path
 import pytest
+import mistune
 
 from mugraph.parser import Parser, ParserException
 
@@ -17,6 +18,16 @@ def valid_sample():
     sample_file = Path("tests/sample01.md")
     parser = Parser(sample_file.absolute())
     return parser
+
+
+@pytest.fixture(scope="session")
+def valid_sample_ast():
+    """
+    Returns syntax tree for sample01
+    """
+    renderer = mistune.Markdown(renderer=mistune.AstRenderer())
+    sample_file = Path("tests/sample01.md")
+    return renderer.read(sample_file)
 
 
 def test_root_name_is_detected(valid_sample):
@@ -102,10 +113,17 @@ def test_graph_is_correct(valid_sample):
     assert ("Ticket Association", "Cashless") in edges
 
 
-def test_parser_adds_graph_description(valid_sample):
+def test_parser_adds_graph_description(valid_sample, valid_sample_ast):
     """
     If after the first heading theres a paragraph, its text
     should be add as a 'description' property in the
     generated graph.
     """
     assert "description" in valid_sample.graph.graph
+
+    description = valid_sample.graph.graph["description"]
+    expected_description = valid_sample_ast[1]["children"][0]["text"]
+    expected_description = (
+        f"{expected_description}\n{valid_sample_ast[2]['children'][0]['text']}"
+    )
+    assert description == expected_description

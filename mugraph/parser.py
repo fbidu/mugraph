@@ -62,11 +62,14 @@ class Parser:
         at_consumes = False
 
         def process_non_heading(token):
-            content = token.get("text")
+            content = token["children"][0].get("text")
 
             # The text right after the heading is the global description
             if level == 1:
-                self.graph.graph["description"] = content
+                if description := self.graph.graph.get("description"):
+                    self.graph.graph["description"] = f"{description}\n{content}"
+                else:
+                    self.graph.graph["description"] = content
 
         def process_heading(token):
             nonlocal level, last_level, at_consumes
