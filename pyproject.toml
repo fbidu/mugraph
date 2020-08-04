@@ -14,9 +14,9 @@ flask = "^1.1"
 pytest-cov = "^2.9"
 
 [tool.poetry.dev-dependencies]
-pytest = {version = "^5.3", allows-prereleases = true}
-pre-commit = {version = "^2.0", allows-prereleases = true}
-black = {version = "^18.3-alpha.0", allows-prereleases = true}
+pytest = {version = "^5.3"}
+pre-commit = {version = "^2.0"}
+black = {version = "^19.10-beta.0", allow-prereleases = true}
 ipython = "^7.13"
 pylint = "^2.4"
 
